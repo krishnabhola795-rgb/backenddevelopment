@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Profile</title>
+  <style>body { font-family: sans-serif; margin: 60px; } button { padding: 8px 14px; }</style>
+</head>
+<body>
+  <h2>Profile</h2>
+  <pre id="out">Loading...</pre>
+  <button id="logout">Logout</button>
+  <script>
+    const token = localStorage.getItem("token");
+    if (!token) location.href = "/"; // no token = no access to this page
+    fetch("/api/auth/profile", { headers: { Authorization: "Bearer " + token } })
+      .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
+      .then(({ ok, d }) => {
+        if (!ok) { localStorage.removeItem("token"); location.href = "/"; return; }
+        document.getElementById("out").textContent = JSON.stringify(d.profile, null, 2);
+      });
+    document.getElementById("logout").onclick = () => { localStorage.removeItem("token"); location.href = "/"; };
+  </script>
+</body>
+</html>
